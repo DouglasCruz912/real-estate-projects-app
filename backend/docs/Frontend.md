@@ -1,5 +1,7 @@
 # Plan de Acción Frontend - Gestión de Proyectos y Stock
 
+> **Referencia API:** Los endpoints y autenticación del backend están documentados en [README.md](../README.md) (sección Endpoints y Autenticación).
+
 ## Tareas de Desarrollo (En orden de prioridad)
 
 ### 1. Integración Base con API

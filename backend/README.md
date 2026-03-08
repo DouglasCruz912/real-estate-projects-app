@@ -15,8 +15,7 @@ Una API REST moderna para la gestión de proyectos inmobiliarios, desarrollada c
 ## 🚀 Tecnologías
 
 - **Framework**: FastAPI 0.104.1
-- **Base de Datos**: MySQL con SQLAlchemy 2.0 (async)
-- **Cache**: Redis 5.0.1 (opcional)
+- **Base de Datos**: MySQL 8.0 con SQLAlchemy 2.0 (async)
 - **Validación**: Pydantic 2.5.0
 - **Almacenamiento**: AWS S3 para archivos
 - **Logging**: Structlog para logs estructurados
@@ -24,8 +23,10 @@ Una API REST moderna para la gestión de proyectos inmobiliarios, desarrollada c
 
 ## 📂 Estructura del Proyecto
 
+Ver descripción detallada en [STRUCTURE.md](STRUCTURE.md).
+
 ```
-apis/api-projects/
+backend/
 ├── src/
 │   ├── database/          # Configuración y conexión a BD
 │   ├── models/            # Modelos SQLAlchemy
@@ -35,9 +36,10 @@ apis/api-projects/
 │   ├── dependencies/      # Dependencias reutilizables
 │   ├── middleware/        # Middleware personalizado
 │   └── utils/             # Utilidades generales
-├── main.py               # Aplicación FastAPI principal
-├── start.py              # Script de inicio rápido
-└── requirements.txt      # Dependencias del proyecto
+├── main.py                # Aplicación FastAPI principal
+├── start.py               # Script de inicio rápido
+├── docker-compose.yml     # MySQL 8.0
+└── requirements.txt       # Dependencias del proyecto
 ```
 
 ## 🛠️ Instalación
@@ -45,15 +47,14 @@ apis/api-projects/
 ### Prerrequisitos
 
 - Python 3.8+
-- MySQL 8.0+
-- Redis (opcional)
-- Cuenta AWS con acceso a S3
+- MySQL 8.0+ (p. ej. via `docker-compose up -d`)
+- Cuenta AWS con acceso a S3 (para imágenes y documentos)
 
 ### Pasos de Instalación
 
 1. **Clonar y navegar al proyecto**
 ```bash
-cd apis/api-projects
+cd backend
 ```
 
 2. **Crear entorno virtual**
@@ -69,36 +70,38 @@ venv\Scripts\activate     # Windows
 pip install -r requirements.txt
 ```
 
-4. **Configurar variables de entorno**
+4. **Levantar la base de datos (Docker)**
 ```bash
-# Crear archivo .env en la raíz del proyecto
+docker-compose up -d
+```
+
+5. **Configurar variables de entorno**
+```bash
+# Crear archivo .env en la raíz del proyecto (backend)
 cp .env.example .env
+# Editar .env con tus credenciales (DB_*, API_KEY, AWS_S3_*)
 ```
 
 ### Variables de Entorno Requeridas
 
+Copiar desde `.env.example` y ajustar valores. Resumen:
+
 ```env
-# Base de Datos
+# Base de datos (coincidir con docker-compose.yml)
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=real_estate_app
-DB_USER=root
-DB_PASSWORD=tu_password
+DB_USER=app_user
+DB_PASSWORD=app_password
 
-# Redis (opcional)
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-
-# API Key
+# API
 API_KEY=tu-api-key-secreta
 
-# AWS S3 (para archivos)
-AWS_ACCESS_KEY_ID=tu_access_key
-AWS_SECRET_ACCESS_KEY=tu_secret_key
-AWS_REGION=us-west-2
-S3_BUCKET_IMAGES=proyectos-images
-S3_BUCKET_DOCUMENTS=proyectos-documents
+# AWS S3 (imágenes y documentos)
+AWS_S3_ACCESS_KEY=tu_access_key_id
+AWS_S3_SECRET_KEY=tu_secret_access_key
+AWS_S3_REGION=us-west-2
+AWS_S3_BUCKET_NAME=bucket-api-projects
 ```
 
 ## 🚀 Uso
@@ -123,65 +126,64 @@ uvicorn main:app --reload --host localhost --port 8000
 
 ## 🔐 Autenticación
 
-Todos los endpoints están protegidos con API Key. Para hacer peticiones:
+Todos los endpoints (excepto `/`, `/health`, `/docs`) requieren el header `X-API-Key`. Ejemplo:
 
 ```bash
-curl -H "X-API-Key: tu-api-key" http://localhost:8000/api/v1/companies
+curl -H "X-API-Key: tu-api-key" http://localhost:8000/api/companies
 ```
 
 ## 📡 Endpoints Principales
 
-### Inmobiliarias
-- `GET /api/v1/companies` - Listar inmobiliarias
-- `POST /api/v1/companies` - Crear inmobiliaria
-- `GET /api/v1/companies/{id}` - Obtener inmobiliaria
-- `PUT /api/v1/companies/{id}` - Actualizar inmobiliaria
-- `DELETE /api/v1/companies/{id}` - Eliminar inmobiliaria
+Prefijo base: `/api`.
 
-### Proyectos
-- `GET /api/v1/projects` - Listar proyectos
-- `POST /api/v1/projects` - Crear proyecto
-- `GET /api/v1/projects/{id}` - Obtener proyecto
-- `PUT /api/v1/projects/{id}` - Actualizar proyecto
-- `DELETE /api/v1/projects/{id}` - Eliminar proyecto
+### Inmobiliarias (`/api/companies`)
+- `GET /api/companies` - Listar inmobiliarias
+- `POST /api/companies` - Crear inmobiliaria
+- `GET /api/companies/{id}` - Obtener inmobiliaria
+- `PUT /api/companies/{id}` - Actualizar inmobiliaria
+- `DELETE /api/companies/{id}` - Eliminar inmobiliaria (soft delete)
 
-### Stock
-- `GET /api/v1/stock` - Listar unidades
-- `POST /api/v1/stock` - Crear unidad
-- `GET /api/v1/stock/{id}` - Obtener unidad
-- `PUT /api/v1/stock/{id}` - Actualizar unidad
-- `DELETE /api/v1/stock/{id}` - Eliminar unidad
+### Proyectos (`/api/projects`)
+- `GET /api/projects` - Listar proyectos (paginado)
+- `POST /api/projects` - Crear proyecto
+- `GET /api/projects/{id}` - Obtener proyecto
+- `PUT /api/projects/{id}` - Actualizar proyecto
+- `DELETE /api/projects/{id}` - Eliminar proyecto (soft delete)
+- `GET /api/projects/{id}/details` - Ficha comercial (proyecto + stock)
 
-### Búsquedas
-- `GET /api/v1/search/projects` - Buscar proyectos con filtros
-- `GET /api/v1/search/stock` - Buscar unidades con filtros
+### Stock (`/api/stock`)
+- `GET /api/stock/project/{project_id}` - Listar stock de un proyecto
+- `POST /api/stock` - Crear unidad de stock
+- `GET /api/stock/{id}` - Obtener unidad
+- `PUT /api/stock/{id}` - Actualizar unidad
+- `DELETE /api/stock/{id}` - Eliminar unidad (soft delete)
 
-### Archivos
-- `POST /api/v1/files/upload` - Subir archivo a S3
-- `DELETE /api/v1/files` - Eliminar archivo de S3
+### Archivos (`/api/files`) — S3
+- `POST /api/files/project/{project_id}/images` - Subir imágenes de proyecto
+- `GET /api/files/project/{project_id}/images` - Listar imágenes
+- `GET /api/files/project/{project_id}/images/summary` - Resumen de imágenes
+- `PUT /api/files/project-image/{id}` - Actualizar imagen
+- `DELETE /api/files/project-image/{id}` - Eliminar imagen
+- `POST /api/files/project/{project_id}/documents` - Subir documento
+- `GET /api/files/project/{project_id}/documents` - Listar documentos
+- `PUT /api/files/project-document/{id}` - Actualizar documento
+- `DELETE /api/files/project-document/{id}` - Eliminar documento
 
 ## 💡 Ejemplos de Uso
 
 ### Crear una Inmobiliaria
 
 ```bash
-curl -X POST "http://localhost:8000/api/v1/companies" \
+curl -X POST "http://localhost:8000/api/companies" \
   -H "X-API-Key: tu-api-key" \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "Inmobiliaria Ejemplo",
-    "email": "contacto@ejemplo.com",
-    "phone": "+56912345678",
-    "city": "Santiago",
-    "is_active": true
-  }'
+  -d "{\"name\": \"Inmobiliaria Ejemplo\", \"email\": \"contacto@ejemplo.com\", \"phone\": \"+56912345678\", \"city\": \"Santiago\", \"is_active\": true}"
 ```
 
-### Buscar Proyectos
+### Listar proyectos (paginado)
 
 ```bash
-curl "http://localhost:8000/api/v1/search/projects?city=Santiago&price_min=50000000" \
-  -H "X-API-Key: tu-api-key"
+curl "http://localhost:8000/api/projects?skip=0&limit=10" -H "X-API-Key: tu-api-key"
 ```
 
 ## 🏗️ Desarrollo
@@ -194,13 +196,14 @@ pytest
 
 ### Estructura de Base de Datos
 
-El proyecto maneja las siguientes entidades principales:
+El proyecto maneja las siguientes entidades principales (detalle en [STRUCTURE.md](STRUCTURE.md)):
 
 - **RealEstateCompany**: Inmobiliarias desarrolladoras
 - **Project**: Proyectos inmobiliarios
-- **ProjectStock**: Unidades individuales de cada proyecto
+- **ProjectStock**: Unidades de stock por proyecto
 - **LegalUser**: Representantes legales de proyectos
-- **ProjectImage**: Imágenes asociadas a proyectos
+- **ProjectImage**: Imágenes de proyectos (almacenadas en S3)
+- **ProjectDocument**: Documentos de proyectos (almacenados en S3)
 
 ### Agregar Nuevos Endpoints
 
@@ -216,12 +219,6 @@ El proyecto maneja las siguientes entidades principales:
 ```env
 # Logging
 LOG_LEVEL=INFO
-
-# Cache Redis (opcional)
-REDIS_PASSWORD=password_redis
-
-# AWS adicional
-AWS_DEFAULT_REGION=us-west-2
 ```
 
 ## 🤝 Contribución

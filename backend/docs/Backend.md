@@ -1,5 +1,7 @@
 # Plan de Acción Backend - API Proyectos y Stock
 
+> **Estado actual:** Para la API implementada, endpoints, variables de entorno y estructura ver [README.md](../README.md) y [STRUCTURE.md](../STRUCTURE.md).
+
 ## Tareas de Desarrollo (En orden de prioridad)
 
 ### 1. Preparación de Infraestructura

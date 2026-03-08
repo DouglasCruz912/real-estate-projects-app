@@ -1,9 +1,11 @@
 # Contexto General - API Proyectos y Stock
 
+> **Estructura implementada:** La estructura real del backend está en [STRUCTURE.md](../STRUCTURE.md). La siguiente era la propuesta inicial.
+
 ## 📋 Objetivo del MVP
 Crear un sistema de gestión centralizado para proyectos inmobiliarios y su stock asociado, reemplazando el flujo actual basado en Google Drive + SyncStock.
 
-## 🗂️ Estructura de Carpetas Sugerida (FastAPI)
+## 🗂️ Estructura de Carpetas Sugerida (FastAPI) — referencia histórica
 
 ```
 apis/api-projects/
