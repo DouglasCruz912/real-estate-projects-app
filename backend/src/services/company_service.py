@@ -123,7 +123,7 @@ async def get_companies_list(
             search_filter = or_(
                 RealEstateCompany.name.ilike(f"%{search}%"),
                 RealEstateCompany.legal_name.ilike(f"%{search}%"),
-                RealEstateCompany.rut.ilike(f"%{search}%")
+                RealEstateCompany.tax_id.ilike(f"%{search}%")
             )
             query = query.where(search_filter)
         
@@ -169,7 +169,7 @@ async def update_company(
         company = await get_company_by_id(db, company_id)
         
         # Validar datos únicos si se van a actualizar
-        if any(field in update_data for field in ['rut', 'name']):
+        if any(field in update_data for field in ['tax_id', 'name']):
             await _validate_unique_fields(db, update_data, exclude_id=company_id)
         
         # Actualizar campos
@@ -262,10 +262,10 @@ async def _validate_unique_fields(
 ) -> None:
     """Validar campos únicos"""
     
-    if 'rut' in data and data['rut']:
+    if 'tax_id' in data and data['tax_id']:
         query = select(RealEstateCompany).where(
             and_(
-                RealEstateCompany.rut == data['rut'],
+                RealEstateCompany.tax_id == data['tax_id'],
                 RealEstateCompany.deleted_at.is_(None)
             )
         )
@@ -275,7 +275,7 @@ async def _validate_unique_fields(
         
         existing = await db.scalar(query)
         if existing:
-            raise DuplicateCompanyError(f"RUT {data['rut']} ya existe")
+            raise DuplicateCompanyError(f"Identificador fiscal {data['tax_id']} ya existe")
 
 
 async def _count_active_projects(db: AsyncSession, company_id: int) -> int:

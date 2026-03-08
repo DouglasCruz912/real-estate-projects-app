@@ -267,12 +267,11 @@ def validate_coordinates(coordinates: Dict[str, Any]) -> Dict[str, Any]:
         lat = float(coordinates['lat'])
         lng = float(coordinates['lng'])
         
-        # Rango válido para Chile
-        if not (-56.0 <= lat <= -17.0):
-            raise ValueError("latitude must be between -56.0 and -17.0 (valid range for Chile)")
+        if not (-90.0 <= lat <= 90.0):
+            raise ValueError("latitude must be between -90.0 and 90.0")
         
-        if not (-110.0 <= lng <= -66.0):
-            raise ValueError("longitude must be between -110.0 and -66.0 (valid range for Chile)")
+        if not (-180.0 <= lng <= 180.0):
+            raise ValueError("longitude must be between -180.0 and 180.0")
         
         return {
             'lat': lat,

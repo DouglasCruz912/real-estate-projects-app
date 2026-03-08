@@ -72,47 +72,8 @@ CACHE_CONFIG = {
     'STOCK_SUMMARY_TTL': 1800  # 30 minutos
 }
 
-# Regiones de Chile
-CHILEAN_REGIONS = [
-    'Arica y Parinacota',
-    'Tarapacá',
-    'Antofagasta',
-    'Atacama',
-    'Coquimbo',
-    'Valparaíso',
-    'Metropolitana',
-    'O\'Higgins',
-    'Maule',
-    'Ñuble',
-    'Biobío',
-    'La Araucanía',
-    'Los Ríos',
-    'Los Lagos',
-    'Aysén',
-    'Magallanes'
-]
-
-# Principales ciudades
-MAJOR_CITIES = [
-    'Santiago',
-    'Valparaíso',
-    'Viña del Mar',
-    'Concepción',
-    'La Serena',
-    'Antofagasta',
-    'Temuco',
-    'Rancagua',
-    'Talca',
-    'Arica',
-    'Chillán',
-    'Iquique',
-    'Puerto Montt',
-    'Punta Arenas',
-    'Copiapó'
-]
-
-# Monedas soportadas (UF es la principal en Chile para propiedades)
-CURRENCY_TYPES = ['UF', 'CLP', 'USD', 'EUR']
+# Monedas soportadas
+CURRENCY_TYPES = ['USD', 'EUR', 'CLP', 'UF', 'MXN', 'COP', 'ARS', 'PEN', 'BRL']
 
 # Estados de proyecto actualizados
 PROJECT_STATES = [
@@ -191,7 +152,7 @@ VALIDATION_LIMITS = {
 
 # Mensajes de error comunes
 ERROR_MESSAGES = {
-    'INVALID_RUT': 'RUT inválido',
+    'INVALID_TAX_ID': 'Identificador fiscal inválido',
     'INVALID_EMAIL': 'Email inválido',
     'INVALID_PHONE': 'Teléfono inválido',
     'INVALID_PRICE': 'Precio inválido',

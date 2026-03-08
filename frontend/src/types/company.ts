@@ -2,7 +2,7 @@ export interface Company {
   id: number;
   name: string;
   legal_name?: string | null;
-  rut?: string | null;
+  tax_id?: string | null;
   email?: string | null;
   phone?: string | null;
   website?: string | null;
@@ -18,7 +18,7 @@ export interface Company {
 export interface CompanyCreate {
   name: string;
   legal_name?: string;
-  rut?: string;
+  tax_id?: string;
   email?: string;
   phone?: string;
   website?: string;

@@ -41,7 +41,7 @@ async def create_company(
 async def list_companies(
     skip: int = Query(0, ge=0, description="Número de registros a omitir"),
     limit: int = Query(100, ge=1, le=500, description="Número máximo de registros"),
-    search: Optional[str] = Query(None, description="Buscar por nombre, razón social o RUT"),
+    search: Optional[str] = Query(None, description="Buscar por nombre, razón social o ID fiscal"),
     city: Optional[str] = Query(None, description="Filtrar por ciudad"),
     region: Optional[str] = Query(None, description="Filtrar por región"),
     is_active: Optional[bool] = Query(None, description="Filtrar por estado activo"),

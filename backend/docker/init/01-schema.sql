@@ -44,7 +44,7 @@ CREATE TABLE real_estate_companies (
 
     name VARCHAR(255) NOT NULL,
     legal_name VARCHAR(255) NULL,
-    rut VARCHAR(12) NULL UNIQUE,
+    tax_id VARCHAR(20) NULL UNIQUE,
 
     email VARCHAR(255) NULL,
     phone VARCHAR(20) NULL,
@@ -62,7 +62,7 @@ CREATE TABLE real_estate_companies (
     FOREIGN KEY (deleted_by) REFERENCES users(id),
 
     INDEX idx_company_name (name),
-    INDEX idx_company_rut (rut),
+    INDEX idx_company_tax_id (tax_id),
     INDEX idx_company_active (is_active),
     INDEX idx_company_city (city),
     INDEX idx_company_created_by (created_by),
@@ -244,7 +244,7 @@ CREATE TABLE legal_users (
     project_id BIGINT NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    rut VARCHAR(12) NULL,
+    tax_id VARCHAR(20) NULL,
 
     email VARCHAR(255) NULL,
     phone VARCHAR(20) NULL,

@@ -52,7 +52,7 @@ class RealEstateCompany(Base):
     # Información básica
     name = Column(String(255), nullable=False)
     legal_name = Column(String(255), nullable=True)
-    rut = Column(String(12), nullable=True, unique=True)
+    tax_id = Column(String(20), nullable=True, unique=True)
     
     # Contacto
     email = Column(String(255), nullable=True)
@@ -77,7 +77,7 @@ class RealEstateCompany(Base):
     # Índices
     __table_args__ = (
         Index("idx_company_name", "name"),
-        Index("idx_company_rut", "rut"),
+        Index("idx_company_tax_id", "tax_id"),
         Index("idx_company_active", "is_active"),
         Index("idx_company_city", "city"),
         Index("idx_company_created_by", "created_by"),
@@ -306,7 +306,7 @@ class LegalUser(Base):
     project_id = Column(BigInteger, ForeignKey("projects.id"), nullable=False)
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
-    rut = Column(String(12), nullable=True)
+    tax_id = Column(String(20), nullable=True)
     
     # Contacto
     email = Column(String(255), nullable=True)

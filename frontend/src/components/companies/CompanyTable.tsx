@@ -61,7 +61,7 @@ export function CompanyTable({
       <TableHeader>
         <TableRow>
           <TableHead>Nombre</TableHead>
-          <TableHead>RUT</TableHead>
+          <TableHead>ID Fiscal</TableHead>
           <TableHead>Ciudad</TableHead>
           <TableHead>Región</TableHead>
           <TableHead>Estado</TableHead>
@@ -76,7 +76,7 @@ export function CompanyTable({
           companies.map((company) => (
             <TableRow key={company.id}>
               <TableCell className="font-medium">{company.name}</TableCell>
-              <TableCell>{company.rut ?? "—"}</TableCell>
+              <TableCell>{company.tax_id ?? "—"}</TableCell>
               <TableCell>{company.city ?? "—"}</TableCell>
               <TableCell>{company.region ?? "—"}</TableCell>
               <TableCell>

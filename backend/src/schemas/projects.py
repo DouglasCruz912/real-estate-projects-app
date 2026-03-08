@@ -351,7 +351,7 @@ class CompanyInfo(BaseModel):
     id: int
     name: str
     legal_name: Optional[str] = None
-    rut: Optional[str] = None
+    tax_id: Optional[str] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     website: Optional[str] = None

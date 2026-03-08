@@ -52,7 +52,7 @@ export function CompanyFilters({
       <div className="relative w-64">
         <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Buscar nombre, RUT..."
+          placeholder="Buscar nombre, ID fiscal..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-8"

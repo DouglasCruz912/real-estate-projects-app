@@ -16,7 +16,7 @@ import { Loader2 } from "lucide-react"
 const companySchema = z.object({
   name: z.string().min(1, "El nombre es requerido").max(255),
   legal_name: z.string().optional(),
-  rut: z.string().max(12, "Máximo 12 caracteres").optional(),
+  tax_id: z.string().max(20, "Máximo 20 caracteres").optional(),
   email: z.string().email("Email inválido").or(z.literal("")).optional(),
   phone: z.string().optional(),
   website: z.string().optional(),
@@ -60,7 +60,7 @@ export function CompanyForm({ company, onSuccess }: CompanyFormProps) {
     defaultValues: {
       name: company?.name ?? "",
       legal_name: company?.legal_name ?? "",
-      rut: company?.rut ?? "",
+      tax_id: company?.tax_id ?? "",
       email: company?.email ?? "",
       phone: company?.phone ?? "",
       website: company?.website ?? "",
@@ -125,15 +125,15 @@ export function CompanyForm({ company, onSuccess }: CompanyFormProps) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="rut">RUT</Label>
+          <Label htmlFor="tax_id">ID Fiscal</Label>
           <Input
-            id="rut"
-            placeholder="12.345.678-9"
-            aria-invalid={!!errors.rut}
-            {...register("rut")}
+            id="tax_id"
+            placeholder="RUT, NIF, EIN, etc."
+            aria-invalid={!!errors.tax_id}
+            {...register("tax_id")}
           />
-          {errors.rut && (
-            <p className="text-sm text-destructive">{errors.rut.message}</p>
+          {errors.tax_id && (
+            <p className="text-sm text-destructive">{errors.tax_id.message}</p>
           )}
         </div>
 
@@ -142,7 +142,7 @@ export function CompanyForm({ company, onSuccess }: CompanyFormProps) {
           <Input
             id="email"
             type="email"
-            placeholder="contacto@empresa.cl"
+            placeholder="contacto@empresa.com"
             aria-invalid={!!errors.email}
             {...register("email")}
           />
@@ -155,7 +155,7 @@ export function CompanyForm({ company, onSuccess }: CompanyFormProps) {
           <Label htmlFor="phone">Teléfono</Label>
           <Input
             id="phone"
-            placeholder="+56 9 1234 5678"
+            placeholder="+1 234 567 8900"
             {...register("phone")}
           />
         </div>
@@ -164,7 +164,7 @@ export function CompanyForm({ company, onSuccess }: CompanyFormProps) {
           <Label htmlFor="website">Sitio Web</Label>
           <Input
             id="website"
-            placeholder="https://www.empresa.cl"
+            placeholder="https://www.empresa.com"
             {...register("website")}
           />
         </div>
@@ -173,16 +173,16 @@ export function CompanyForm({ company, onSuccess }: CompanyFormProps) {
           <Label htmlFor="city">Ciudad</Label>
           <Input
             id="city"
-            placeholder="Santiago"
+            placeholder="Ciudad"
             {...register("city")}
           />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="region">Región</Label>
+          <Label htmlFor="region">Región / Estado</Label>
           <Input
             id="region"
-            placeholder="Región Metropolitana"
+            placeholder="Región, estado o provincia"
             {...register("region")}
           />
         </div>

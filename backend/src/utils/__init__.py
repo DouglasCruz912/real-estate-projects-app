@@ -28,13 +28,12 @@ __all__ = [
     "StockNotAvailableError",
     
     # Validation
-    "validate_rut",
+    "validate_tax_id",
     "validate_email", 
     "validate_phone",
     "validate_price",
     "validate_area",
     "validate_coordinates",
-    "normalize_rut",
     "normalize_phone",
     "validate_project_status",
     "validate_stock_status",
@@ -71,13 +70,10 @@ __all__ = [
     "PROJECT_TYPES",
     "UNIT_TYPES",
     "IMAGE_TYPES",
-    "REPRESENTATIVE_TYPES",
     "PAGINATION",
     "CACHE_CONFIG",
-    "CHILEAN_REGIONS",
-    "MAJOR_CITIES",
     "VALIDATION_LIMITS",
     "ERROR_MESSAGES",
     "API_CONFIG",
     "RESPONSE_HEADERS"
-] 
+]
