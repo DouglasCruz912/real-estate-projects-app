@@ -1,0 +1,74 @@
+---
+description: Mejores prácticas de React según documentación oficial
+globs: frontend/**/*.{tsx,ts,jsx,js}
+alwaysApply: false
+---
+
+# Mejores Prácticas React
+
+Referencia principal: https://react.dev/
+
+## Componentes
+- Siempre usar **componentes funcionales** (nunca clases)
+- Un componente por archivo, nombrado en PascalCase
+- Destructurar props con tipado TypeScript
+- Preferir composición sobre herencia (ref: Thinking in React)
+
+```tsx
+interface UserCardProps {
+  name: string;
+  email: string;
+  onSelect?: (id: string) => void;
+}
+
+export const UserCard = ({ name, email, onSelect }: UserCardProps) => {
+  return (/* JSX */);
+};
+```
+
+## Hooks (ref: React Hooks docs)
+- `useState`: estado local del componente
+- `useEffect`: efectos secundarios con array de dependencias correcto y cleanup
+- `useCallback`: memorizar funciones pasadas como props a componentes hijos
+- `useMemo`: memorizar cálculos costosos (no usar prematuramente)
+- `useRef`: referencias al DOM o valores mutables que no disparan re-render
+- Custom hooks (`useXxx`): extraer lógica reutilizable entre componentes
+
+```tsx
+// Custom hook para fetch de datos
+function useCompanies(filters: CompanyFilters) {
+  const [data, setData] = useState<Company[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchCompanies(filters, controller.signal)
+      .then(setData)
+      .catch(setError)
+      .finally(() => setLoading(false));
+    return () => controller.abort();
+  }, [filters]);
+
+  return { data, loading, error };
+}
+```
+
+## Estado
+- Estado local con `useState` para datos del componente
+- Context API para estado compartido entre componentes cercanos
+- Levantar estado al ancestro común más cercano (Lifting State Up)
+- Evitar prop drilling excesivo; usar Context o composición
+
+## Listas y Keys
+- Usar keys estables y únicas (IDs del backend, nunca índices si la lista cambia)
+- `key` debe identificar el elemento, no su posición
+
+## Renderizado Condicional
+- Usar `&&`, ternarios o early returns
+- Evitar renderizado condicional complejo; extraer en componentes separados
+
+## TypeScript
+- Tipar todas las props con `interface` (preferido sobre `type` para props)
+- Tipar estados: `useState<Type>(initialValue)`
+- Tipar respuestas de API y eventos del DOM

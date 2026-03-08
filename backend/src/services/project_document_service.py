@@ -15,7 +15,7 @@ from ..utils.exceptions import (
     ValidationError,
     DatabaseError
 )
-from . import rbac_service
+from . import user_service
 from .s3_service import s3_service
 
 logger = structlog.get_logger()
@@ -35,7 +35,7 @@ async def create_project_document(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         # Validar que el proyecto existe y obtener su información
         project = await _get_project_by_id(db, project_id)
@@ -132,7 +132,7 @@ async def update_project_document(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         # Obtener documento
         document = await get_project_document_by_id(db, document_id)
@@ -174,7 +174,7 @@ async def delete_project_document(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         # Obtener documento
         document = await get_project_document_by_id(db, document_id)

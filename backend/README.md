@@ -81,7 +81,7 @@ cp .env.example .env
 # Base de Datos
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=propital_projects
+DB_NAME=real_estate_app
 DB_USER=root
 DB_PASSWORD=tu_password
 
@@ -240,7 +240,6 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 Para soporte y preguntas:
 
-- 📧 Email: desarrollo@propital.com
 - 📋 Issues: [GitHub Issues](https://github.com/tu-org/api-projects/issues)
 - 📖 Documentación: [Wiki del Proyecto](https://github.com/tu-org/api-projects/wiki)
 

@@ -32,18 +32,12 @@ async def setup_database():
         if health["mysql"]:
             logger.info("✅ Conexión MySQL establecida")
             
-            # Crear tablas si no existen
             logger.info("🔨 Iniciando proceso de creación de tablas...")
             result = await create_tables()
             logger.info(f"✅ {result}")
         else:
             logger.error("❌ Error en MySQL")
             return False
-        
-        if health["redis"]:
-            logger.info("✅ Conexión Redis establecida")
-        else:
-            logger.warning("⚠️ Redis no disponible")
         
         return True
         
@@ -83,7 +77,6 @@ def main():
     📍 Configuración:
     ├── Host: localhost:8000
     ├── Base de datos: {db_config.HOST}:{db_config.PORT}/{db_config.NAME}
-    ├── Redis: {db_config.REDIS_HOST}:{db_config.REDIS_PORT}
     └── Log level: info
     
     🚀 Endpoints disponibles:

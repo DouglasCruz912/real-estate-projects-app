@@ -1,0 +1,67 @@
+---
+description: Patrón de base de datos SQLAlchemy async con FastAPI
+globs: backend/src/models/**/*.py, backend/src/services/**/*.py, backend/src/database/**/*.py
+alwaysApply: false
+---
+
+# Base de Datos - SQLAlchemy Async con FastAPI
+
+Ref: https://docs.sqlalchemy.org/en/20/ y https://fastapi.tiangolo.com/tutorial/sql-databases/
+
+## Sesiones Async
+- Usar siempre `AsyncSession` inyectada via `DatabaseDep`
+- Nunca crear sesiones manualmente en services o routers
+- La sesión se cierra automáticamente al terminar el request
+
+## Queries (Estilo SQLAlchemy 2.0)
+- Usar `select()`, `update()`, `delete()` en lugar del estilo legacy `.query()`
+- `result.scalar_one_or_none()` para un resultado o None
+- `result.scalars().all()` para listas
+
+```python
+from sqlalchemy import select, and_, or_, func, desc
+
+query = select(Model).where(
+    and_(
+        Model.id == item_id,
+        Model.deleted_at.is_(None)
+    )
+).order_by(desc(Model.created_at))
+
+result = await db.execute(query)
+item = result.scalar_one_or_none()
+```
+
+## Modelos
+- Heredar de `Base` definido en `src/database/base.py`
+- Campos de auditoría estándar: `created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`
+- Soft delete: usar `deleted_at` en lugar de eliminar registros
+- Siempre filtrar por `deleted_at.is_(None)` en queries
+
+## Relaciones
+- Usar `relationship()` con `back_populates` (no `backref`)
+- Usar `selectinload()` para carga eager de relaciones cuando sea necesario
+
+```python
+from sqlalchemy.orm import relationship, selectinload
+
+class Project(Base):
+    company_id = Column(BigInteger, ForeignKey("real_estate_companies.id"))
+    company = relationship("RealEstateCompany", back_populates="projects")
+
+query = select(Company).options(selectinload(Company.projects))
+```
+
+## Transacciones
+- `await db.commit()` para confirmar cambios
+- `await db.rollback()` en bloques `except` antes de re-lanzar excepciones
+- `await db.refresh(instance)` después de commit para obtener datos actualizados del servidor
+
+## Paginación
+- Usar `offset()` y `limit()` en queries
+- Combinar con `func.count()` para obtener el total
+
+```python
+query = select(Model).where(...).offset(skip).limit(limit)
+count_query = select(func.count(Model.id)).where(...)
+```

@@ -3,7 +3,7 @@ Modelos SQLAlchemy para API de Proyectos Inmobiliarios
 """
 
 from .models import (
-    RbacUser,
+    User,
     RealEstateCompany,
     Project,
     ProjectStock,
@@ -14,7 +14,7 @@ from .models import (
 )
 
 __all__ = [
-    "RbacUser",
+    "User",
     "RealEstateCompany",
     "Project", 
     "ProjectStock",
@@ -22,4 +22,4 @@ __all__ = [
     "ProjectImage",
     "ProjectDocument",  
     "ProjectCommercial"
-] 
+]

@@ -1,0 +1,27 @@
+---
+description: Convenciones generales del proyecto Real Estate Projects App
+alwaysApply: true
+---
+
+# Convenciones Generales del Proyecto
+
+## Idioma
+- Responder siempre en **español** al usuario
+- Código (variables, funciones, clases, métodos): en **inglés**
+- Mensajes de error de dominio y logs de negocio: pueden ser en español
+
+## Estructura del Proyecto
+- **Backend**: FastAPI (Python) en `backend/`
+- **Frontend**: React (TypeScript) en `frontend/`
+- Documentación del proyecto en `backend/docs/`
+
+## Naming Conventions
+- Python: `snake_case` para variables, funciones y módulos; `PascalCase` para clases
+- TypeScript/React: `camelCase` para variables y funciones; `PascalCase` para componentes y tipos
+- Archivos Python: `snake_case.py`
+- Archivos React: `PascalCase.tsx` para componentes, `camelCase.ts` para utilidades
+
+## Principios
+- No agregar comentarios obvios que narren lo que el código hace
+- Preferir editar archivos existentes sobre crear nuevos
+- Seguir la documentación oficial de FastAPI y React como referencia principal

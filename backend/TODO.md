@@ -5,7 +5,7 @@ Lista de tareas pendientes, mejoras y características futuras para el proyecto.
 ## 🚀 Próximos pasos
 
 
-- [ ] **Integrar con rbac**
+- [ ] **Implementar autenticación de usuarios**
 - [ ] **Crear logica en la carga de imagenes para s3**
 - [ ] **Crear Bucket para S3**
 - [ ] **Refactorizar endpoint Poryects y stock para la logica s3**

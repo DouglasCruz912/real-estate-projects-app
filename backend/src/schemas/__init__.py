@@ -29,13 +29,13 @@ from .stock import (
     StockListResponse
 )
 
-
-
-# RBAC schemas
-from .rbac import (
-    RbacUserBase,
-    RbacUserResponse,
-    RbacUserInfo
+# User schemas
+from .users import (
+    UserBase,
+    UserCreate,
+    UserUpdate,
+    UserResponse,
+    UserInfo
 )
 
 __all__ = [
@@ -61,8 +61,10 @@ __all__ = [
     "StockResponse",
     "StockListResponse",
     
-    # RBAC
-    "RbacUserBase",
-    "RbacUserResponse",
-    "RbacUserInfo"
+    # Users
+    "UserBase",
+    "UserCreate",
+    "UserUpdate",
+    "UserResponse",
+    "UserInfo"
 ] 

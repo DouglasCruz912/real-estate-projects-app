@@ -1,7 +1,7 @@
 ## 🔍 Contexto
 
 El mantenedor de Proyectos y Stock es uno de nuestros mayores dolores en el equipo de ventas ya que no es fácil ni tampoco accesible actualizar estas entidades. **¿Por qué?** 🤔
-- Para ambos casos, los Proyectos y el Stock se cargan por medio de una carpeta de Google Drive que tiene una determinada estructura, aquí se utiliza una de nuestras herramientas de Propital llamada **SyncStock**, que sincroniza tales archivos una X cantidad de veces durante el día.
+- Para ambos casos, los Proyectos y el Stock se cargan por medio de una carpeta de Google Drive que tiene una determinada estructura, utilizando una herramienta de sincronización llamada **SyncStock**, que sincroniza tales archivos una X cantidad de veces durante el día.
 - Para el caso puntual del Stock, el mayor dolor de las KAM es que las unidades aparecen desfasadas o no se actualizan en tiempo real, lo cual es un inconveniente dado que pueden haber casos como: reservas múltiples en una misma unidad.
 - Esto produce que las KAMS (Key Account Manager / Ejecutivos de Negocio) vayan directamente al Google Drive y no utilicen nuestra fuente de la verdad llamada BackOffice, esto nos genera un problema porque necesitamos centralizar todo en un solo lugar para evitar cambios bruscos de contexto entre herramientas y para que toda la información quede relacionada entre sí.
 - La ficha comercial debe estar orientada a mejorar la experiencia del Broker para que pueda asesorar de forma exitosa al cliente y concretar una reserva/venta.
@@ -26,7 +26,7 @@ El mantenedor de Proyectos y Stock es uno de nuestros mayores dolores en el equi
 - BackOffice
 - AppServices (Ya no será necesario post implementación)
 - SyncStock (Ya no será necesario post implementación)
-- Propital Global (Apuntar a que se pueda reutilizar en otras plataformas)
+- Plataforma Global (Apuntar a que se pueda reutilizar en otras plataformas)
 
 ## 📝 Accionables Backend
 

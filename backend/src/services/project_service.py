@@ -22,7 +22,7 @@ from ..utils.exceptions import (
     ValidationError,
     DatabaseError
 )
-from . import rbac_service
+from . import user_service
 
 logger = structlog.get_logger()
 
@@ -181,7 +181,7 @@ async def update_project(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         project = await get_project_by_id(db, project_id)
         
@@ -208,7 +208,7 @@ async def update_project(
             if hasattr(project, field):
                 setattr(project, field, value)
         
-        project.updated_by = user_id  # ID del usuario RBAC
+        project.updated_by = user_id
         
         await db.commit()
         await db.refresh(project)
@@ -303,7 +303,7 @@ async def delete_project(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         project = await get_project_by_id(db, project_id)
         
@@ -313,7 +313,6 @@ async def delete_project(
                 f"No se puede eliminar el proyecto. Tiene {project.sold_stock_units} unidades vendidas."
             )
         
-        # Soft delete con auditoría RBAC
         project.deleted_at = func.now()
         project.deleted_by = user_id
         project.updated_by = user_id
@@ -621,7 +620,7 @@ async def create_project(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         # Validar que la inmobiliaria existe
         await _validate_company_exists(db, project_data['company_id'])
@@ -629,10 +628,9 @@ async def create_project(
         # Separar datos del proyecto de datos comerciales
         project_fields, commercial_fields = _separate_project_and_commercial_data(project_data)
         
-        # Crear proyecto con auditoría RBAC y unidades inicializadas en 0
         project = Project(
             **project_fields,
-            created_by=user_id,  # ID del usuario RBAC
+            created_by=user_id,
             total_units=0,       # Siempre inicia en 0
             available_units=0    # Siempre inicia en 0
         )

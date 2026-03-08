@@ -1,0 +1,78 @@
+---
+description: Arquitectura y estructura del frontend React con TypeScript
+globs: frontend/**/*.{tsx,ts,jsx,js}
+alwaysApply: false
+---
+
+# Arquitectura Frontend - React + TypeScript
+
+Ref: https://react.dev/learn/thinking-in-react
+
+## Estructura de Carpetas (`frontend/src/`)
+
+```
+src/
+├── components/      # Componentes reutilizables de UI
+│   ├── ui/          # Componentes base (Button, Input, Modal, etc.)
+│   └── layout/      # Layout compartido (Header, Sidebar, Footer)
+├── pages/           # Páginas/vistas (una por ruta)
+├── hooks/           # Custom hooks reutilizables
+├── services/        # Llamadas a la API (capa de comunicación con backend)
+├── types/           # Tipos e interfaces TypeScript compartidos
+├── utils/           # Funciones utilitarias puras
+├── context/         # React Context providers
+└── assets/          # Imágenes, fuentes, archivos estáticos
+```
+
+## Separación de Responsabilidades
+
+### Componentes (`components/`)
+- Componentes de UI reutilizables, sin lógica de negocio
+- Reciben datos y callbacks via props
+- Cada componente en su propia carpeta si tiene archivos asociados
+
+### Páginas (`pages/`)
+- Componen componentes de UI y conectan con services/hooks
+- Una página por ruta principal
+- Manejan estado de la página y coordinan la lógica
+
+### Services (`services/`)
+- Capa centralizada de comunicación con el backend FastAPI
+- Un archivo por dominio: `companyService.ts`, `projectService.ts`, `stockService.ts`
+- Configuración base de Axios/Fetch con interceptores para API Key y errores
+
+```typescript
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: { 'X-API-Key': import.meta.env.VITE_API_KEY }
+});
+
+export const companyService = {
+  getAll: (params?: CompanyFilters) => api.get<Company[]>('/api/companies', { params }),
+  getById: (id: number) => api.get<Company>(`/api/companies/${id}`),
+  create: (data: CompanyCreate) => api.post<Company>('/api/companies', data),
+  update: (id: number, data: CompanyUpdate) => api.put<Company>(`/api/companies/${id}`, data),
+  delete: (id: number) => api.delete(`/api/companies/${id}`),
+};
+```
+
+### Types (`types/`)
+- Interfaces que reflejan los schemas Pydantic del backend
+- Separar por dominio: `company.types.ts`, `project.types.ts`
+
+### Hooks (`hooks/`)
+- Custom hooks para encapsular lógica reutilizable
+- Nombrar con prefijo `use`: `useCompanies`, `useProject`, `useForm`
+- Manejar estados de loading, error y data
+
+## Manejo de Errores y Estados de Carga
+- Siempre manejar estados: loading, error, success, empty
+- Mostrar feedback visual al usuario en cada estado
+- Usar try/catch en llamadas a services
+- Centralizar manejo de errores HTTP en interceptores de Axios
+
+## Variables de Entorno
+- Prefijo `VITE_` para variables accesibles en el frontend
+- Nunca exponer secretos en el frontend

@@ -1,0 +1,66 @@
+---
+description: Arquitectura por capas obligatoria del backend FastAPI
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# Arquitectura por Capas - Backend FastAPI
+
+Respetar siempre la separación de responsabilidades en capas. Ref: https://fastapi.tiangolo.com/tutorial/bigger-applications/
+
+## Capas del Backend (`backend/src/`)
+
+### 1. Routers (`src/routers/`)
+- Solo definición de endpoints HTTP y delegación a services
+- **Nunca** contener lógica de negocio ni queries a la BD
+- Usar `Depends()` para inyección de dependencias (`DatabaseDep`, `RequireAPIKey`)
+- Validar entrada con schemas Pydantic como parámetros tipados
+- Retornar schemas de respuesta con `response_model`
+
+### 2. Services (`src/services/`)
+- Toda la lógica de negocio y acceso a datos
+- Reciben `AsyncSession` como primer parámetro
+- Funciones auxiliares privadas con prefijo `_` (ej: `_validate_unique_fields`)
+- Manejar excepciones de dominio (`APIException` y subclases)
+- Hacer `rollback()` en bloques `except` antes de re-lanzar
+
+### 3. Models (`src/models/`)
+- Solo definición de tablas SQLAlchemy y relaciones
+- Heredar de `Base` (`src/database/base.py`)
+- No contener lógica de negocio
+
+### 4. Schemas (`src/schemas/`)
+- Validación con Pydantic v2
+- Separar por entidad: `EntityCreate`, `EntityUpdate`, `EntityResponse`
+- Heredar de `BaseResponse` para responses con `from_attributes = True`
+
+### 5. Dependencies (`src/dependencies/`)
+- Dependencias inyectables reutilizables de FastAPI
+- `DatabaseDep` para sesión de BD, `RequireAPIKey` para autenticación
+
+### 6. Utils (`src/utils/`)
+- `exceptions.py`: jerarquía de excepciones (`APIException` -> subclases de dominio)
+- `validation.py`, `helpers.py`, `constants.py`
+
+## Ejemplo de Flujo Correcto
+
+```python
+# Router: solo recibe, delega y retorna
+@router.post("", response_model=CompanyResponse, status_code=201)
+async def create_company(
+    company_data: CompanyCreate,
+    db: AsyncSession = DatabaseDep,
+    _: bool = RequireAPIKey
+):
+    company = await company_service.create_company(db=db, company_data=company_data.model_dump(exclude_unset=True))
+    return CompanyResponse.model_validate(company)
+
+# Service: lógica de negocio y acceso a datos
+async def create_company(db: AsyncSession, company_data: Dict[str, Any]) -> RealEstateCompany:
+    await _validate_unique_fields(db, company_data)
+    company = RealEstateCompany(**company_data)
+    db.add(company)
+    await db.commit()
+    await db.refresh(company)
+    return company
+```

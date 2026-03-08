@@ -20,7 +20,7 @@ from ..utils.exceptions import (
     ValidationError,
     DatabaseError
 )
-from . import rbac_service
+from . import user_service
 
 logger = structlog.get_logger()
 
@@ -35,7 +35,7 @@ async def create_stock_unit(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         # Validar que el proyecto existe
         await _validate_project_exists(db, project_id)
@@ -47,7 +47,7 @@ async def create_stock_unit(
         stock_unit = ProjectStock(
             project_id=project_id,
             **stock_data,
-            created_by=user_id  # ID del usuario RBAC
+            created_by=user_id
         )
         
         db.add(stock_unit)
@@ -217,7 +217,7 @@ async def update_stock_unit(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         stock_unit = await get_stock_by_id(db, stock_id)
         
@@ -239,7 +239,7 @@ async def update_stock_unit(
             if hasattr(stock_unit, field):
                 setattr(stock_unit, field, value)
         
-        stock_unit.updated_by = user_id  # ID del usuario RBAC
+        stock_unit.updated_by = user_id
         
         await db.commit()
         await db.refresh(stock_unit)
@@ -285,7 +285,7 @@ async def delete_stock_unit(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         stock_unit = await get_stock_by_id(db, stock_id)
         

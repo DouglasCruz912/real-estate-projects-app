@@ -88,7 +88,7 @@ async def health_check():
     
     return {
         "status": "healthy" if health_status["mysql"] else "unhealthy",
-        "services": health_status,
+        "database": health_status["mysql"],
         "version": "1.4.1"
     }
 

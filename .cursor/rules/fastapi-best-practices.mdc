@@ -1,0 +1,73 @@
+---
+description: Mejores prácticas de FastAPI según documentación oficial
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# Mejores Prácticas FastAPI
+
+Referencia principal: https://fastapi.tiangolo.com/
+
+## Endpoints Async
+- Usar siempre `async def` para endpoints y operaciones de BD (ref: Async/Await docs)
+- Las dependencias que hacen I/O también deben ser `async`
+
+## Tipado Estricto
+- Tipar todos los parámetros: `Path()`, `Query()`, `Body()`
+- Usar `response_model` en el decorador del endpoint
+- Usar `status_code` explícito con `status.HTTP_xxx`
+
+```python
+from fastapi import status, Query, Path
+
+@router.get("/{item_id}", response_model=ItemResponse, status_code=status.HTTP_200_OK)
+async def get_item(
+    item_id: int = Path(..., gt=0, description="ID del elemento"),
+    include_details: bool = Query(False, description="Incluir detalles")
+):
+```
+
+## Validación con Pydantic v2
+- Usar `model_config = ConfigDict(from_attributes=True)` en lugar de `class Config`
+- Usar `Field()` con constraints (`ge`, `le`, `min_length`, `max_length`, `pattern`)
+- Usar `model_dump(exclude_unset=True)` para updates parciales
+
+```python
+from pydantic import BaseModel, Field, ConfigDict
+
+class ItemCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255, description="Nombre")
+    price: Decimal = Field(..., gt=0, description="Precio")
+
+class ItemResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    name: str
+```
+
+## Manejo de Errores
+- Usar la jerarquía de excepciones en `src/utils/exceptions.py`
+- `APIException` como base; subclases para cada caso: `NotFoundError`, `ValidationError`, `ConflictError`, etc.
+- En services: capturar excepciones de dominio, hacer `rollback()` y re-lanzar
+- En routers: capturar `APIException` (pasar) y `Exception` genérica (500)
+
+## Inyección de Dependencias
+- Usar `Depends()` para BD, auth y servicios compartidos (ref: Dependencies docs)
+- Reutilizar dependencias definidas en `src/dependencies/`
+- `DatabaseDep = Depends(get_db)` y `RequireAPIKey = Security(validate_api_key)`
+
+## Documentación Automática
+- Agregar `tags` al router: `APIRouter(tags=["companies"])`
+- Docstrings breves en cada endpoint (aparecen en Swagger)
+- Usar `description` en `Query()`, `Path()`, `Field()`
+
+## Respuestas Estandarizadas
+- Usar los schemas base de `src/schemas/base.py`:
+  - `BaseResponse`: base con `from_attributes`
+  - `MessageResponse`: respuestas simples con mensaje
+  - `PaginatedResponse[T]`: listas paginadas
+  - `ErrorResponse`: errores estructurados
+
+## Logging
+- Usar `structlog` para logging estructurado
+- Loguear operaciones importantes en services (create, update, delete)

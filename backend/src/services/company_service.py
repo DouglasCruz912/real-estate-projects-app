@@ -17,7 +17,7 @@ from ..utils.exceptions import (
     ValidationError,
     DatabaseError
 )
-from . import rbac_service
+from . import user_service
 
 logger = structlog.get_logger()
 
@@ -31,15 +31,14 @@ async def create_company(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         # Validar datos únicos
         await _validate_unique_fields(db, company_data)
         
-        # Crear instancia con auditoría RBAC
         company = RealEstateCompany(
             **company_data,
-            created_by=user_id  # ID del usuario RBAC
+            created_by=user_id
         )
         
         db.add(company)
@@ -164,7 +163,7 @@ async def update_company(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         # Obtener company actual
         company = await get_company_by_id(db, company_id)
@@ -211,7 +210,7 @@ async def delete_company(
     
     try:
         # Obtener user_id del broker por email
-        user_id = await rbac_service.get_user_id_by_email(db, broker_email)
+        user_id = await user_service.get_user_id_by_email(db, broker_email)
         
         # Obtener company
         company = await get_company_by_id(db, company_id)

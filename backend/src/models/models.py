@@ -1,6 +1,5 @@
 """
 Modelos SQLAlchemy para API de Proyectos Inmobiliarios
-Todos los modelos independientes sin herencia
 """
 
 from sqlalchemy import Column, String, Text, Boolean, Integer, BigInteger, Numeric, ForeignKey, Date, Index, DateTime, JSON
@@ -9,24 +8,29 @@ from sqlalchemy.sql import func
 from ..database.base import Base
 
 
-class RbacUser(Base):
-    """Modelo para usuarios RBAC - Tabla existente"""
+class User(Base):
+    """Modelo para usuarios de la aplicación"""
     
-    __tablename__ = "rbac_users"
+    __tablename__ = "users"
     
-    # Mapear exactamente como está en la tabla
-    id = Column('iduser', BigInteger, primary_key=True, autoincrement=True, index=True)
-    nomcompleto = Column(String(255), nullable=True)
-    nuser = Column(String(255), nullable=True, unique=True)
-    telefono = Column(String(50), nullable=True)
-    token = Column(String(255), nullable=True)
-    created_at = Column(DateTime, server_default=func.current_timestamp(), nullable=True)
-    update_at = Column(DateTime, server_default=func.current_timestamp(), nullable=False)
-    staff = Column(Integer, nullable=False)
-    estado = Column(String(255), nullable=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True, index=True)
+    full_name = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False, unique=True)
+    phone = Column(String(50), nullable=True)
+    password_hash = Column(String(255), nullable=False)
+    role = Column(String(50), default="user", nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    
+    __table_args__ = (
+        Index("idx_user_email", "email"),
+        Index("idx_user_role", "role"),
+        Index("idx_user_active", "is_active"),
+    )
     
     def __repr__(self):
-        return f"<RbacUser(id={self.id}, nuser='{self.nuser}')>"
+        return f"<User(id={self.id}, email='{self.email}')>"
 
 
 class RealEstateCompany(Base):
@@ -41,9 +45,9 @@ class RealEstateCompany(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     
     # Auditoría
-    created_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    updated_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    deleted_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    updated_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    deleted_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
     
     # Información básica
     name = Column(String(255), nullable=False)
@@ -66,9 +70,9 @@ class RealEstateCompany(Base):
     
     # Relaciones
     projects = relationship("Project", back_populates="company", cascade="all, delete-orphan")
-    created_by_user = relationship("RbacUser", foreign_keys=[created_by])
-    updated_by_user = relationship("RbacUser", foreign_keys=[updated_by])
-    deleted_by_user = relationship("RbacUser", foreign_keys=[deleted_by])
+    created_by_user = relationship("User", foreign_keys=[created_by])
+    updated_by_user = relationship("User", foreign_keys=[updated_by])
+    deleted_by_user = relationship("User", foreign_keys=[deleted_by])
     
     # Índices
     __table_args__ = (
@@ -96,9 +100,9 @@ class Project(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     
     # Auditoría
-    created_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    updated_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    deleted_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    updated_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    deleted_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
     
     # Información básica
     company_id = Column(BigInteger, ForeignKey("real_estate_companies.id"), nullable=False)
@@ -157,9 +161,9 @@ class Project(Base):
     images = relationship("ProjectImage", back_populates="project", cascade="all, delete-orphan")
     documents = relationship("ProjectDocument", back_populates="project", cascade="all, delete-orphan")
     legal_users = relationship("LegalUser", back_populates="project", cascade="all, delete-orphan")
-    created_by_user = relationship("RbacUser", foreign_keys=[created_by])
-    updated_by_user = relationship("RbacUser", foreign_keys=[updated_by])
-    deleted_by_user = relationship("RbacUser", foreign_keys=[deleted_by])
+    created_by_user = relationship("User", foreign_keys=[created_by])
+    updated_by_user = relationship("User", foreign_keys=[updated_by])
+    deleted_by_user = relationship("User", foreign_keys=[deleted_by])
     
     # Índices
     __table_args__ = (
@@ -201,9 +205,9 @@ class ProjectStock(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     
     # Auditoría
-    created_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    updated_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    deleted_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    updated_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    deleted_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
     
     # Información básica
     project_id = Column(BigInteger, ForeignKey("projects.id"), nullable=False)
@@ -254,9 +258,9 @@ class ProjectStock(Base):
     
     # Relaciones
     project = relationship("Project", back_populates="stock_units")
-    created_by_user = relationship("RbacUser", foreign_keys=[created_by])
-    updated_by_user = relationship("RbacUser", foreign_keys=[updated_by])
-    deleted_by_user = relationship("RbacUser", foreign_keys=[deleted_by])
+    created_by_user = relationship("User", foreign_keys=[created_by])
+    updated_by_user = relationship("User", foreign_keys=[updated_by])
+    deleted_by_user = relationship("User", foreign_keys=[deleted_by])
     
     # Índices
     __table_args__ = (
@@ -294,9 +298,9 @@ class LegalUser(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     
     # Auditoría
-    created_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    updated_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    deleted_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    updated_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    deleted_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
     
     # Información básica
     project_id = Column(BigInteger, ForeignKey("projects.id"), nullable=False)
@@ -318,9 +322,9 @@ class LegalUser(Base):
     
     # Relaciones
     project = relationship("Project", back_populates="legal_users")
-    created_by_user = relationship("RbacUser", foreign_keys=[created_by])
-    updated_by_user = relationship("RbacUser", foreign_keys=[updated_by])
-    deleted_by_user = relationship("RbacUser", foreign_keys=[deleted_by])
+    created_by_user = relationship("User", foreign_keys=[created_by])
+    updated_by_user = relationship("User", foreign_keys=[updated_by])
+    deleted_by_user = relationship("User", foreign_keys=[deleted_by])
     
     # Índices
     __table_args__ = (
@@ -348,9 +352,9 @@ class ProjectImage(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     
     # Auditoría
-    created_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    updated_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    deleted_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    updated_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    deleted_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
     
     # Información básica
     project_id = Column(BigInteger, ForeignKey("projects.id"), nullable=False)
@@ -368,9 +372,9 @@ class ProjectImage(Base):
     
     # Relaciones
     project = relationship("Project", back_populates="images")
-    created_by_user = relationship("RbacUser", foreign_keys=[created_by])
-    updated_by_user = relationship("RbacUser", foreign_keys=[updated_by])
-    deleted_by_user = relationship("RbacUser", foreign_keys=[deleted_by])
+    created_by_user = relationship("User", foreign_keys=[created_by])
+    updated_by_user = relationship("User", foreign_keys=[updated_by])
+    deleted_by_user = relationship("User", foreign_keys=[deleted_by])
     
     # Índices
     __table_args__ = (
@@ -398,9 +402,9 @@ class ProjectDocument(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     
     # Auditoría
-    created_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    updated_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    deleted_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    updated_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    deleted_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
     
     # Información básica
     project_id = Column(BigInteger, ForeignKey("projects.id"), nullable=False)
@@ -415,9 +419,9 @@ class ProjectDocument(Base):
     
     # Relaciones
     project = relationship("Project", back_populates="documents")
-    created_by_user = relationship("RbacUser", foreign_keys=[created_by])
-    updated_by_user = relationship("RbacUser", foreign_keys=[updated_by])
-    deleted_by_user = relationship("RbacUser", foreign_keys=[deleted_by])
+    created_by_user = relationship("User", foreign_keys=[created_by])
+    updated_by_user = relationship("User", foreign_keys=[updated_by])
+    deleted_by_user = relationship("User", foreign_keys=[deleted_by])
     
     # Índices
     __table_args__ = (
@@ -444,9 +448,9 @@ class ProjectCommercial(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     
     # Auditoría
-    created_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    updated_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
-    deleted_by = Column(BigInteger, ForeignKey("rbac_users.iduser"), nullable=True)
+    created_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    updated_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    deleted_by = Column(BigInteger, ForeignKey("users.id"), nullable=True)
     
     # Relación con proyecto (1:1)
     project_id = Column(BigInteger, ForeignKey("projects.id"), nullable=False, unique=True)
@@ -489,9 +493,9 @@ class ProjectCommercial(Base):
     
     # Relaciones
     project = relationship("Project", back_populates="commercial")
-    created_by_user = relationship("RbacUser", foreign_keys=[created_by])
-    updated_by_user = relationship("RbacUser", foreign_keys=[updated_by])
-    deleted_by_user = relationship("RbacUser", foreign_keys=[deleted_by])
+    created_by_user = relationship("User", foreign_keys=[created_by])
+    updated_by_user = relationship("User", foreign_keys=[updated_by])
+    deleted_by_user = relationship("User", foreign_keys=[deleted_by])
     
     # Índices
     __table_args__ = (

@@ -455,7 +455,7 @@ Esta versión implementa una importante expansión del modelo de proyectos, sepa
 #### 📊 Migración Completa
 - **Script de migración**: `20250122 - Project Commercial Model Expansion.sql`
 - **11 columnas nuevas en `projects`**
-- **Nueva tabla `project_commercial`** con 21 campos + auditoría RBAC
+- **Nueva tabla `project_commercial`** con 21 campos + auditoría de usuarios
 - **Índices optimizados**: Para mejorar performance de consultas
 - **Constraints de integridad**: Foreign keys y validaciones
 
@@ -518,7 +518,7 @@ Esta versión implementa una importante expansión del modelo de proyectos, sepa
 #### 🚀 Para el Negocio
 - **Información rica**: 34 campos para describir proyectos completamente
 - **Flexibilidad**: Campos JSON para información variable
-- **Trazabilidad**: Auditoría RBAC completa
+- **Trazabilidad**: Auditoría de usuarios completa
 - **Escalabilidad**: Preparado para crecimiento futuro
 
 ### 🎊 Resultado Final
