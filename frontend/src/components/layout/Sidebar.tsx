@@ -8,15 +8,21 @@ import {
   FolderKanban,
   LayoutDashboard,
   Package,
+  Users,
   X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/contexts/AuthContext"
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Inmobiliarias", href: "/companies", icon: Building2 },
   { name: "Proyectos", href: "/projects", icon: FolderKanban },
   { name: "Stock", href: "/stock", icon: Package },
+]
+
+const adminNavigation = [
+  { name: "Usuarios", href: "/users", icon: Users },
 ]
 
 interface SidebarProps {
@@ -26,11 +32,14 @@ interface SidebarProps {
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const { isAdmin } = useAuth()
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/"
     return pathname.startsWith(href)
   }
+
+  const allNavigation = isAdmin ? [...navigation, ...adminNavigation] : navigation
 
   return (
     <>
@@ -61,7 +70,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
 
         <nav className="flex-1 space-y-1 px-3 py-4">
-          {navigation.map((item) => {
+          {allNavigation.map((item) => {
             const active = isActive(item.href)
             return (
               <Link
@@ -83,7 +92,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </nav>
 
         <div className="border-t border-white/10 px-4 py-4">
-          <p className="text-xs text-zinc-500">© 2026 Real Estate App</p>
+          <p className="text-xs text-zinc-500">&copy; 2026 Real Estate App</p>
         </div>
       </aside>
     </>

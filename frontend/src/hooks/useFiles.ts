@@ -1,8 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import fileService from "@/services/fileService";
 
-const brokerEmail = process.env.NEXT_PUBLIC_BROKER_EMAIL || "";
-
 export function useProjectImages(projectId: number) {
   return useQuery({
     queryKey: ["images", projectId],
@@ -23,7 +21,7 @@ export function useUploadImages() {
       projectId: number;
       files: File[];
       opts?: { image_type?: string; alt_text?: string; is_featured?: boolean };
-    }) => fileService.uploadImages(projectId, files, brokerEmail, opts),
+    }) => fileService.uploadImages(projectId, files, opts),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["images"] });
     },
@@ -34,8 +32,7 @@ export function useDeleteImage() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (imageId: number) =>
-      fileService.deleteImage(imageId, brokerEmail),
+    mutationFn: (imageId: number) => fileService.deleteImage(imageId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["images"] });
     },
@@ -62,8 +59,7 @@ export function useUploadDocument() {
       projectId: number;
       file: File;
       documentType?: string;
-    }) =>
-      fileService.uploadDocument(projectId, file, brokerEmail, documentType),
+    }) => fileService.uploadDocument(projectId, file, documentType),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
@@ -74,8 +70,7 @@ export function useDeleteDocument() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (documentId: number) =>
-      fileService.deleteDocument(documentId, brokerEmail),
+    mutationFn: (documentId: number) => fileService.deleteDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
     },

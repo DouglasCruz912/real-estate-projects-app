@@ -46,3 +46,15 @@ class UserInfo(BaseModel):
     id: int = Field(description="ID del usuario")
     full_name: str = Field(description="Nombre completo")
     email: str = Field(description="Email del usuario")
+
+
+class LoginRequest(BaseModel):
+    """Esquema para login"""
+    email: str = Field(..., description="Email del usuario")
+    password: str = Field(..., description="Contraseña")
+
+
+class LoginResponse(BaseModel):
+    """Respuesta de login"""
+    token: str = Field(description="JWT token")
+    user: UserResponse = Field(description="Datos del usuario")

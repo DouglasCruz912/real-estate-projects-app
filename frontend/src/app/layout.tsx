@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { QueryProvider } from "@/providers/QueryProvider"
+import { AuthProvider } from "@/contexts/AuthContext"
 import { AppShell } from "@/components/layout/AppShell"
 import { Toaster } from "@/components/ui/sonner"
 
@@ -22,10 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
         <QueryProvider>
-          <AppShell>{children}</AppShell>
-          <Toaster />
+          <AuthProvider>
+            <AppShell>{children}</AppShell>
+            <Toaster />
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>

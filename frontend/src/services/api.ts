@@ -8,9 +8,9 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-  if (apiKey) {
-    config.headers["X-API-Key"] = apiKey;
+  const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });

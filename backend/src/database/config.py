@@ -19,6 +19,10 @@ class DatabaseConfig:
     
     API_KEY: str = os.environ.get("API_KEY", "test-api-key-development")
     
+    JWT_SECRET_KEY: str = os.environ.get("JWT_SECRET_KEY", "dev-jwt-secret-key-change-in-production")
+    JWT_ALGORITHM: str = os.environ.get("JWT_ALGORITHM", "HS256")
+    JWT_EXPIRATION_MINUTES: int = int(os.environ.get("JWT_EXPIRATION_MINUTES", "480"))
+    
     @property
     def database_url(self) -> str:
         """URL de conexión MySQL para SQLAlchemy"""

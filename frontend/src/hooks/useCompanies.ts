@@ -6,8 +6,6 @@ import type {
   CompanyFilters,
 } from "@/types/company";
 
-const brokerEmail = process.env.NEXT_PUBLIC_BROKER_EMAIL || "";
-
 export function useCompanies(filters?: CompanyFilters) {
   return useQuery({
     queryKey: ["companies", filters],
@@ -27,8 +25,7 @@ export function useCreateCompany() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CompanyCreate) =>
-      companyService.create(data, brokerEmail),
+    mutationFn: (data: CompanyCreate) => companyService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
     },
@@ -40,7 +37,7 @@ export function useUpdateCompany() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: CompanyUpdate }) =>
-      companyService.update(id, data, brokerEmail),
+      companyService.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
     },
@@ -51,7 +48,7 @@ export function useDeleteCompany() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => companyService.remove(id, brokerEmail),
+    mutationFn: (id: number) => companyService.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
     },

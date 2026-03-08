@@ -3,9 +3,16 @@
 import { useState } from "react"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { Header } from "@/components/layout/Header"
+import { LoginScreen } from "@/components/auth/LoginScreen"
+import { useAuth } from "@/contexts/AuthContext"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    return <LoginScreen />
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50">

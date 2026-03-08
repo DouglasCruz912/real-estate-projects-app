@@ -6,8 +6,6 @@ import type {
   ProjectFilters,
 } from "@/types/project";
 
-const brokerEmail = process.env.NEXT_PUBLIC_BROKER_EMAIL || "";
-
 export function useProjects(filters?: ProjectFilters) {
   return useQuery({
     queryKey: ["projects", filters],
@@ -27,8 +25,7 @@ export function useCreateProject() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: ProjectCreate) =>
-      projectService.create(data, brokerEmail),
+    mutationFn: (data: ProjectCreate) => projectService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
@@ -40,7 +37,7 @@ export function useUpdateProject() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: ProjectUpdate }) =>
-      projectService.update(id, data, brokerEmail),
+      projectService.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
@@ -51,7 +48,7 @@ export function useDeleteProject() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => projectService.remove(id, brokerEmail),
+    mutationFn: (id: number) => projectService.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },

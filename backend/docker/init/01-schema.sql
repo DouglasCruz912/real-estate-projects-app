@@ -410,3 +410,8 @@ CREATE TABLE project_commercial (
     INDEX idx_project_commercial_construction_capital_gain (construction_capital_gain),
     INDEX idx_project_commercial_vacancy (vacancy)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Seed: usuario admin por defecto (password: admin123)
+INSERT INTO users (full_name, email, password_hash, role, is_active)
+VALUES ('Administrador', 'admin@realestate.com', '$2b$12$lOrWEsKi9S1IF4xjDn5rL.D4QHEDgIkeEjuDDKIaxkv7uWNUJADFO', 'admin', TRUE)
+ON DUPLICATE KEY UPDATE full_name = full_name;

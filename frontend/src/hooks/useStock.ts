@@ -2,8 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import stockService from "@/services/stockService";
 import type { StockCreate, StockUpdate, StockFilters } from "@/types/stock";
 
-const brokerEmail = process.env.NEXT_PUBLIC_BROKER_EMAIL || "";
-
 export function useProjectStock(projectId: number, filters?: StockFilters) {
   return useQuery({
     queryKey: ["stock", projectId, filters],
@@ -24,7 +22,7 @@ export function useCreateStock() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: StockCreate) => stockService.create(data, brokerEmail),
+    mutationFn: (data: StockCreate) => stockService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["stock"] });
     },
@@ -36,7 +34,7 @@ export function useUpdateStock() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: StockUpdate }) =>
-      stockService.update(id, data, brokerEmail),
+      stockService.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["stock"] });
     },
@@ -47,7 +45,7 @@ export function useDeleteStock() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => stockService.remove(id, brokerEmail),
+    mutationFn: (id: number) => stockService.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["stock"] });
     },
