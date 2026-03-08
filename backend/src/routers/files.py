@@ -1,6 +1,6 @@
 """
 Router para manejo de archivos (imágenes y documentos)
-Integrado con AWS S3 bucket-api-projects
+Integrado con AWS S3 / MinIO (bucket configurado via AWS_S3_BUCKET_NAME)
 """
 
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query, Path
@@ -102,13 +102,10 @@ async def upload_project_images(
         # Separar URLs para respuesta
         urls_list = project_image.url.split(',') if project_image.url else []
         
-        # Extraer información del bucket y keys desde las URLs
-        bucket_name = "bucket-api-projects"
         keys_list = []
         for url in urls_list:
-            if "bucket-api-projects.s3." in url:
-                # Extraer la key desde la URL
-                key = url.split("bucket-api-projects.s3.us-west-2.amazonaws.com/")[1]
+            key = s3_service.extract_key_from_url(url)
+            if key:
                 keys_list.append(key)
         
         return {
@@ -122,7 +119,7 @@ async def upload_project_images(
                 "is_featured": project_image.is_featured,
                 "display_order": project_image.display_order,
                 "total_images": len(files),
-                "bucket": bucket_name,
+                "bucket": s3_service.bucket_name,
                 "keys_list": keys_list,
                 "urls_list": urls_list,
                 "created_at": project_image.created_at.isoformat() if project_image.created_at else None

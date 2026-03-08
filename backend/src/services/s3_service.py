@@ -1,6 +1,6 @@
 """
-Servicio S3 para manejo de imágenes y documentos
-Configurado para trabajar con AWS S3 bucket-api-projects
+Servicio S3 para manejo de imágenes y documentos.
+Soporta AWS S3 o MinIO (endpoint configurable vía AWS_S3_ENDPOINT_URL).
 """
 
 import os
@@ -10,38 +10,44 @@ import mimetypes
 from typing import Optional, Dict, Any, List
 from fastapi import HTTPException, UploadFile
 from botocore.exceptions import ClientError, NoCredentialsError
+from botocore.config import Config
 import structlog
 
 logger = structlog.get_logger()
 
 
 class S3Service:
-    """Servicio para gestionar archivos en AWS S3"""
+    """Servicio para gestionar archivos en S3 (AWS o MinIO compatible)."""
     
     def __init__(self):
-        """Inicializar cliente S3"""
+        """Inicializar cliente S3 (AWS o MinIO según AWS_S3_ENDPOINT_URL)."""
         try:
-            # Configurar cliente S3 con credenciales específicas
-            self.s3_client = boto3.client(
-                's3',
-                aws_access_key_id=os.environ.get('AWS_S3_ACCESS_KEY'),
-                aws_secret_access_key=os.environ.get('AWS_S3_SECRET_KEY'),
-                region_name=os.environ.get('AWS_S3_REGION', 'us-west-2')
-            )
-            
-            # Configurar bucket único
-            self.bucket_name = os.environ.get('AWS_S3_BUCKET_NAME', 'bucket-api-projects')
-            
-            # Configurar región
+            self.endpoint_url = os.environ.get('AWS_S3_ENDPOINT_URL') or None
+            self.bucket_name = os.environ.get('AWS_S3_BUCKET_NAME', 'projects')
             self.region = os.environ.get('AWS_S3_REGION', 'us-west-2')
-            
-            # Configurar carpetas base
             self.images_folder = "images"
             self.documents_folder = "documents"
+            self._is_minio = bool(self.endpoint_url)
             
-            logger.info("✅ S3 Service inicializado", 
+            client_kwargs = {
+                'service_name': 's3',
+                'aws_access_key_id': os.environ.get('AWS_S3_ACCESS_KEY'),
+                'aws_secret_access_key': os.environ.get('AWS_S3_SECRET_KEY'),
+                'region_name': self.region,
+                'config': Config(signature_version='s3v4'),
+            }
+            if self.endpoint_url:
+                client_kwargs['endpoint_url'] = self.endpoint_url
+            
+            self.s3_client = boto3.client(**client_kwargs)
+            
+            if self._is_minio:
+                self._ensure_bucket_exists()
+            
+            logger.info("✅ S3 Service inicializado",
                        bucket=self.bucket_name,
                        region=self.region,
+                       endpoint=self.endpoint_url or "AWS",
                        images_folder=self.images_folder,
                        documents_folder=self.documents_folder)
                        
@@ -51,6 +57,39 @@ class S3Service:
         except Exception as e:
             logger.error("❌ Error inicializando S3 Service", error=str(e))
             raise HTTPException(status_code=500, detail=f"S3 initialization error: {str(e)}")
+    
+    def _ensure_bucket_exists(self) -> None:
+        """Crear el bucket en MinIO si no existe."""
+        try:
+            self.s3_client.head_bucket(Bucket=self.bucket_name)
+        except ClientError as e:
+            error_code = e.response['Error']['Code']
+            if error_code in ('404', 'NoSuchBucket'):
+                self.s3_client.create_bucket(Bucket=self.bucket_name)
+                logger.info("✅ Bucket creado en MinIO", bucket=self.bucket_name)
+            else:
+                raise
+    
+    def _build_file_url(self, object_key: str) -> str:
+        """Construir URL del archivo (path-style para MinIO, virtual-hosted para AWS)."""
+        if self.endpoint_url:
+            base = self.endpoint_url.rstrip('/')
+            return f"{base}/{self.bucket_name}/{object_key}"
+        return f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{object_key}"
+    
+    def extract_key_from_url(self, url: str) -> Optional[str]:
+        """Extraer la object key desde una URL generada por este servicio (AWS o MinIO)."""
+        if not url:
+            return None
+        if self.endpoint_url:
+            prefix = f"{self.endpoint_url.rstrip('/')}/{self.bucket_name}/"
+            if prefix in url:
+                return url.split(prefix, 1)[1]
+        else:
+            prefix = f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/"
+            if prefix in url:
+                return url.split(prefix, 1)[1]
+        return None
     
     def _generate_unique_filename(self, original_filename: str) -> str:
         """Generar nombre único para archivo"""
@@ -124,18 +163,18 @@ class S3Service:
             if project_id:
                 metadata['project-id'] = str(project_id)
             
-            # Subir archivo a S3
-            self.s3_client.put_object(
-                Bucket=self.bucket_name,
-                Key=object_key,
-                Body=content,
-                ContentType=file.content_type or self._get_content_type(file.filename),
-                Metadata=metadata,
-                ServerSideEncryption='AES256'  # Encriptación
-            )
+            put_kwargs = {
+                'Bucket': self.bucket_name,
+                'Key': object_key,
+                'Body': content,
+                'ContentType': file.content_type or self._get_content_type(file.filename),
+                'Metadata': metadata,
+            }
+            if not self._is_minio:
+                put_kwargs['ServerSideEncryption'] = 'AES256'
+            self.s3_client.put_object(**put_kwargs)
             
-            # Generar URL pública
-            file_url = f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{object_key}"
+            file_url = self._build_file_url(object_key)
             
             result = {
                 "success": True,
@@ -229,7 +268,7 @@ class S3Service:
                 "last_modified": response.get('LastModified'),
                 "content_type": response.get('ContentType'),
                 "metadata": response.get('Metadata', {}),
-                "url": f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{object_key}"
+                "url": self._build_file_url(object_key)
             }
             
         except ClientError as e:
@@ -276,7 +315,7 @@ class S3Service:
                     "filename": obj['Key'].split('/')[-1],
                     "size": obj['Size'],
                     "last_modified": obj['LastModified'],
-                    "url": f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{obj['Key']}"
+                    "url": self._build_file_url(obj['Key'])
                 }
                 files.append(file_info)
             

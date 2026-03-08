@@ -95,11 +95,11 @@ class ProjectImageListResponse(BaseModel):
                             "is_active": True,
                             "display_order": 1,
                             "alt_text": "Imágenes generales",
-                            "urls_list": ["https://bucket.s3.amazonaws.com/1.jpg", "https://bucket.s3.amazonaws.com/2.jpg"],
+                            "urls_list": ["https://s3-host/bucket/images/1.jpg", "https://s3-host/bucket/images/2.jpg"],
                             "individual_images_count": 2
                         }
                     ],
-                    "all_urls_list": ["https://bucket.s3.amazonaws.com/1.jpg", "https://bucket.s3.amazonaws.com/2.jpg"]
+                    "all_urls_list": ["https://s3-host/bucket/images/1.jpg", "https://s3-host/bucket/images/2.jpg"]
                 }
             }
         }
@@ -125,9 +125,9 @@ class ProjectImageUploadResponse(BaseModel):
                     "is_featured": False,
                     "display_order": 1,
                     "total_images": 3,
-                    "bucket": "bucket-api-projects",
-                    "keys_list": ["images/altos del cerro/image1.jpg", "images/altos del cerro/image2.jpg", "images/altos del cerro/image3.jpg"],
-                    "urls_list": ["https://bucket-api-projects.s3.us-west-2.amazonaws.com/images/altos del cerro/image1.jpg", "https://bucket-api-projects.s3.us-west-2.amazonaws.com/images/altos del cerro/image2.jpg", "https://bucket-api-projects.s3.us-west-2.amazonaws.com/images/altos del cerro/image3.jpg"],
+                    "bucket": "projects",
+                    "keys_list": ["images/project_123/image1.jpg", "images/project_123/image2.jpg", "images/project_123/image3.jpg"],
+                    "urls_list": ["https://s3-host/projects/images/project_123/image1.jpg", "https://s3-host/projects/images/project_123/image2.jpg", "https://s3-host/projects/images/project_123/image3.jpg"],
                     "created_at": "2025-01-07T10:00:00Z"
                 }
             }
@@ -152,7 +152,7 @@ class ProjectImageSummaryResponse(BaseModel):
                     "total_individual_images": 8,
                     "featured_image": 1,
                     "image_types": ["general", "exterior", "interior"],
-                    "all_urls": ["https://bucket.s3.amazonaws.com/1.jpg", "https://bucket.s3.amazonaws.com/2.jpg"]
+                    "all_urls": ["https://s3-host/bucket/images/1.jpg", "https://s3-host/bucket/images/2.jpg"]
                 }
             }
         } 

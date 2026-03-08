@@ -8,7 +8,7 @@ Una API REST moderna para la gestión de proyectos inmobiliarios, desarrollada c
 - **🏢 Inmobiliarias**: Administración de empresas desarrolladoras
 - **📦 Control de Stock**: Gestión de unidades disponibles y vendidas
 - **🔍 Búsquedas Avanzadas**: Filtros personalizables para encontrar propiedades
-- **📁 Gestión de Archivos**: Subida y manejo de imágenes via AWS S3
+- **📁 Gestión de Archivos**: Subida y manejo de imágenes y documentos via AWS S3 o MinIO
 - **🔐 Autenticación Simple**: Protección via API Key
 - **📊 Health Check**: Monitoreo del estado de servicios
 
@@ -17,7 +17,7 @@ Una API REST moderna para la gestión de proyectos inmobiliarios, desarrollada c
 - **Framework**: FastAPI 0.104.1
 - **Base de Datos**: MySQL 8.0 con SQLAlchemy 2.0 (async)
 - **Validación**: Pydantic 2.5.0
-- **Almacenamiento**: AWS S3 para archivos
+- **Almacenamiento**: AWS S3 o MinIO (S3 compatible) para archivos
 - **Logging**: Structlog para logs estructurados
 - **Python**: 3.8+
 
@@ -38,7 +38,7 @@ backend/
 │   └── utils/             # Utilidades generales
 ├── main.py                # Aplicación FastAPI principal
 ├── start.py               # Script de inicio rápido
-├── docker-compose.yml     # MySQL 8.0
+├── docker-compose.yml     # MySQL 8.0 + MinIO
 └── requirements.txt       # Dependencias del proyecto
 ```
 
@@ -47,8 +47,8 @@ backend/
 ### Prerrequisitos
 
 - Python 3.8+
-- MySQL 8.0+ (p. ej. via `docker-compose up -d`)
-- Cuenta AWS con acceso a S3 (para imágenes y documentos)
+- Docker (para MySQL y MinIO via `docker-compose up -d`)
+- Cuenta AWS con acceso a S3 **o** MinIO local (para imágenes y documentos)
 
 ### Pasos de Instalación
 
@@ -70,7 +70,7 @@ venv\Scripts\activate     # Windows
 pip install -r requirements.txt
 ```
 
-4. **Levantar la base de datos (Docker)**
+4. **Levantar servicios (MySQL + MinIO)**
 ```bash
 docker-compose up -d
 ```
@@ -103,6 +103,28 @@ AWS_S3_SECRET_KEY=tu_secret_access_key
 AWS_S3_REGION=us-west-2
 AWS_S3_BUCKET_NAME=bucket-api-projects
 ```
+
+### Desarrollo local con MinIO (S3 compatible, sin AWS)
+
+Puedes usar MinIO en Docker como S3 local para probar subida de imágenes y documentos sin cuenta AWS:
+
+1. **Levantar servicios** (MySQL + MinIO):
+```bash
+docker-compose up -d
+```
+
+2. **En tu `.env`** configura el endpoint y credenciales de MinIO:
+```env
+AWS_S3_ENDPOINT_URL=http://localhost:9000
+AWS_S3_ACCESS_KEY=minioadmin
+AWS_S3_SECRET_KEY=minioadmin
+AWS_S3_REGION=us-east-1
+AWS_S3_BUCKET_NAME=bucket-api-projects
+```
+
+3. El bucket `bucket-api-projects` se crea automáticamente al iniciar la API si no existe.
+
+4. **Consola MinIO:** http://localhost:9001 (usuario `minioadmin`, contraseña `minioadmin`) para ver archivos subidos.
 
 ## 🚀 Uso
 

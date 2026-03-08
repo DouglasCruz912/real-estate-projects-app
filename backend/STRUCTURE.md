@@ -31,7 +31,7 @@ backend/
 ├── docs/                   # Documentación del proyecto
 ├── main.py                 # Aplicación FastAPI principal
 ├── start.py                # Script de inicio con configuración
-├── docker-compose.yml      # Docker Compose para MySQL
+├── docker-compose.yml      # Docker Compose (MySQL + MinIO)
 ├── requirements.txt        # Dependencias Python
 ├── .env.example            # Plantilla de variables de entorno
 ├── README.md               # Documentación principal
@@ -154,20 +154,22 @@ APIException (HTTPException)
 | Base de datos | MySQL 8.0 (Docker) |
 | Validación | Pydantic v2 |
 | Auth | API Key (header `X-API-Key`) |
-| Almacenamiento | AWS S3 (imágenes y documentos) |
+| Almacenamiento | AWS S3 o MinIO (imágenes y documentos) |
 | Logging | structlog |
 | Deploy | AWS Lambda (Mangum) |
 | Tests | pytest, pytest-asyncio, httpx |
 
 ## Docker
 
-Levantar la base de datos:
+Levantar los servicios (MySQL + MinIO):
 
 ```bash
 docker-compose up -d
 ```
 
-El script `docker/init/01-schema.sql` crea automáticamente todas las tablas al iniciar el contenedor por primera vez.
+- El script `docker/init/01-schema.sql` crea automáticamente todas las tablas de MySQL al iniciar el contenedor por primera vez.
+- MinIO queda disponible en `http://localhost:9000` (API) y `http://localhost:9001` (consola web).
+- El bucket se crea automáticamente al iniciar la API si `AWS_S3_ENDPOINT_URL` apunta a MinIO.
 
 ## Convenciones
 
