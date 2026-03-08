@@ -110,6 +110,7 @@ async def get_project_images_list(
             all_urls.extend(urls)
             processed_images.append({
                 "id": image.id, "filename": image.filename,
+                "url": urls[0] if urls else "",
                 "image_type": image.image_type, "is_featured": image.is_featured,
                 "is_active": image.is_active, "display_order": image.display_order,
                 "alt_text": image.alt_text, "urls_list": urls,
@@ -224,10 +225,12 @@ async def upload_project_document(
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'text/plain'
+            'text/plain',
+            'text/csv',
+            'application/csv',
         ]
         if file.content_type not in allowed_types:
-            raise HTTPException(status_code=400, detail="Tipo de archivo no permitido. Solo: PDF, DOC, DOCX, XLS, XLSX, TXT")
+            raise HTTPException(status_code=400, detail="Tipo de archivo no permitido. Solo: PDF, DOC, DOCX, XLS, XLSX, TXT, CSV")
         
         content = await file.read()
         if len(content) > 25 * 1024 * 1024:

@@ -24,7 +24,7 @@ export default function EditProjectPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" render={<Link href="/projects" />}>
+        <Button variant="ghost" size="icon" nativeButton={false} render={<Link href="/projects" />}>
           <ArrowLeft className="size-4" />
         </Button>
         <h1 className="text-2xl font-bold tracking-tight">
@@ -34,6 +34,7 @@ export default function EditProjectPage() {
           <Button
             variant="outline"
             size="sm"
+            nativeButton={false}
             render={<Link href={`/projects/${id}/stock`} />}
           >
             <Package className="size-4" />
@@ -42,6 +43,7 @@ export default function EditProjectPage() {
           <Button
             variant="outline"
             size="sm"
+            nativeButton={false}
             render={<Link href={`/projects/${id}/files`} />}
           >
             <FolderOpen className="size-4" />

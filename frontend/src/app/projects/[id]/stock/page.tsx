@@ -94,6 +94,7 @@ export default function ProjectStockPage() {
           <Button
             variant="ghost"
             size="icon"
+            nativeButton={false}
             render={<Link href={`/projects/${projectId}`} />}
           >
             <ArrowLeft className="size-4" />

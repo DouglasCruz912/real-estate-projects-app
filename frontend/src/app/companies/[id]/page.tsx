@@ -53,7 +53,7 @@ export default function EditCompanyPage() {
     return (
       <div className="flex flex-col items-center justify-center gap-4 py-16 text-muted-foreground">
         <p className="text-lg font-medium">Inmobiliaria no encontrada</p>
-        <Button variant="outline" render={<Link href="/companies" />}>
+        <Button variant="outline" nativeButton={false} render={<Link href="/companies" />}>
           <ArrowLeft className="size-4" />
           Volver al listado
         </Button>
@@ -64,7 +64,7 @@ export default function EditCompanyPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" render={<Link href="/companies" />}>
+        <Button variant="ghost" size="icon" nativeButton={false} render={<Link href="/companies" />}>
           <ArrowLeft />
         </Button>
         <h1 className="text-2xl font-bold tracking-tight">

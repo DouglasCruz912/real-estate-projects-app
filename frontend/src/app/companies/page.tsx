@@ -67,7 +67,7 @@ export default function CompaniesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Inmobiliarias</h1>
-        <Button render={<Link href="/companies/new" />}>
+        <Button nativeButton={false} render={<Link href="/companies/new" />}>
           <Plus className="size-4" />
           Nueva Inmobiliaria
         </Button>

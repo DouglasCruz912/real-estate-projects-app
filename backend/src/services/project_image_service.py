@@ -73,7 +73,7 @@ async def create_project_images(
         # Crear registro único con todas las URLs
         project_image = ProjectImage(
             project_id=project_id,
-            filename=f"{len(files)}_images_{uploaded_files[0]['filename'].split('.')[0]}.batch",  # Nombre descriptivo
+            filename=uploaded_files[0]['original_filename'] if len(files) == 1 else f"{len(files)} imágenes",
             url=urls_comma_separated,  # URLs separadas por comas
             alt_text=alt_text,
             image_type=image_type,

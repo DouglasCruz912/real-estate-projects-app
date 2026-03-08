@@ -378,18 +378,10 @@ async def update_project_aggregates(
         
         # Actualizar proyecto
         update_query = update(Project).where(Project.id == project_id).values(
-            total_stock_units=row.total or 0,
-            available_stock_units=row.available or 0,
-            reserved_stock_units=row.reserved or 0,
-            sold_stock_units=row.sold or 0,
-            min_price=row.min_price,
-            max_price=row.max_price,
-            min_area=row.min_area,
-            max_area=row.max_area,
-            min_bedrooms=row.min_bedrooms or 0,
-            max_bedrooms=row.max_bedrooms or 0,
-            min_bathrooms=row.min_bathrooms or 0,
-            max_bathrooms=row.max_bathrooms or 0
+            total_units=row.total or 0,
+            available_units=row.available or 0,
+            price_from=row.min_price,
+            price_to=row.max_price,
         )
         
         await db.execute(update_query)

@@ -13,7 +13,7 @@ export default function NewProjectPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" render={<Link href="/projects" />}>
+        <Button variant="ghost" size="icon" nativeButton={false} render={<Link href="/projects" />}>
           <ArrowLeft className="size-4" />
         </Button>
         <h1 className="text-2xl font-bold tracking-tight">Nuevo Proyecto</h1>

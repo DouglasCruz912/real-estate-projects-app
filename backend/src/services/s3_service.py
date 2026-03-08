@@ -3,6 +3,7 @@ Servicio S3 para manejo de imágenes y documentos.
 Soporta AWS S3 o MinIO (endpoint configurable vía AWS_S3_ENDPOINT_URL).
 """
 
+import json
 import os
 import boto3
 import uuid
@@ -59,7 +60,7 @@ class S3Service:
             raise HTTPException(status_code=500, detail=f"S3 initialization error: {str(e)}")
     
     def _ensure_bucket_exists(self) -> None:
-        """Crear el bucket en MinIO si no existe."""
+        """Crear el bucket en MinIO si no existe y permitir lectura pública de objetos."""
         try:
             self.s3_client.head_bucket(Bucket=self.bucket_name)
         except ClientError as e:
@@ -69,6 +70,30 @@ class S3Service:
                 logger.info("✅ Bucket creado en MinIO", bucket=self.bucket_name)
             else:
                 raise
+        self._set_minio_public_read_policy()
+
+    def _set_minio_public_read_policy(self) -> None:
+        """Permitir lectura pública (GetObject) en el bucket para que las URLs de imágenes funcionen en el navegador."""
+        policy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:GetObject",
+                    "Resource": f"arn:aws:s3:::{self.bucket_name}/*"
+                }
+            ]
+        }
+        try:
+            self.s3_client.put_bucket_policy(
+                Bucket=self.bucket_name,
+                Policy=json.dumps(policy)
+            )
+            logger.info("✅ Política de lectura pública aplicada al bucket", bucket=self.bucket_name)
+        except ClientError as e:
+            logger.warning("⚠️ No se pudo aplicar política pública al bucket (las URLs directas pueden dar 403)",
+                          bucket=self.bucket_name, error=str(e))
     
     def _build_file_url(self, object_key: str) -> str:
         """Construir URL del archivo (path-style para MinIO, virtual-hosted para AWS)."""

@@ -14,7 +14,7 @@ export default function StockPage() {
       <p className="text-muted-foreground mb-6 max-w-md">
         Selecciona un proyecto para ver y gestionar su stock de unidades.
       </p>
-      <Button render={<Link href="/projects" />}>
+      <Button nativeButton={false} render={<Link href="/projects" />}>
         <ArrowRight className="size-4" />
         Ir a Proyectos
       </Button>

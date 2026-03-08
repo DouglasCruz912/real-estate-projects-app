@@ -17,7 +17,10 @@ interface UpdateImageData {
 
 const fileService = {
   getImages(projectId: number, params?: Record<string, unknown>): Promise<ProjectImage[]> {
-    return api.get(`/api/files/project/${projectId}/images`, { params }).then((res) => res.data);
+    return api.get(`/api/files/project/${projectId}/images`, { params }).then((res) => {
+      const body = res.data;
+      return body?.data?.images ?? [];
+    });
   },
 
   uploadImages(projectId: number, files: File[], opts?: UploadImageOptions): Promise<ProjectImage[]> {
@@ -45,7 +48,10 @@ const fileService = {
   },
 
   getDocuments(projectId: number, params?: Record<string, unknown>): Promise<ProjectDocument[]> {
-    return api.get(`/api/files/project/${projectId}/documents`, { params }).then((res) => res.data);
+    return api.get(`/api/files/project/${projectId}/documents`, { params }).then((res) => {
+      const body = res.data;
+      return body?.data?.documents ?? [];
+    });
   },
 
   uploadDocument(projectId: number, file: File, documentType?: string): Promise<ProjectDocument> {

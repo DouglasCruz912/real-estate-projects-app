@@ -21,6 +21,7 @@ from ..utils.exceptions import (
     DatabaseError
 )
 from . import user_service
+from .project_service import update_project_aggregates
 
 logger = structlog.get_logger()
 
@@ -53,9 +54,9 @@ async def create_stock_unit(
         db.add(stock_unit)
         await db.commit()
         await db.refresh(stock_unit)
-        
 
-        
+        await update_project_aggregates(db, project_id)
+
         logger.info(
             "Unidad de stock creada",
             stock_id=stock_unit.id,
@@ -243,9 +244,9 @@ async def update_stock_unit(
         
         await db.commit()
         await db.refresh(stock_unit)
-        
 
-        
+        await update_project_aggregates(db, stock_unit.project_id)
+
         logger.info(
             "Unidad de stock actualizada",
             stock_id=stock_unit.id,
@@ -299,7 +300,9 @@ async def delete_stock_unit(
         stock_unit.updated_by = user_id
         
         await db.commit()
-        
+
+        await update_project_aggregates(db, stock_unit.project_id)
+
         logger.info(
             "Unidad de stock eliminada",
             stock_id=stock_unit.id,

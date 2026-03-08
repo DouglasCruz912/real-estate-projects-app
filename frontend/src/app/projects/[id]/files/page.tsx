@@ -22,13 +22,16 @@ export default function ProjectFilesPage() {
   const projectId = Number(params.id);
 
   const {
-    data: images = [],
+    data: rawImages,
     isLoading: imagesLoading,
     refetch: refetchImages,
   } = useProjectImages(projectId);
 
-  const { data: documents = [], isLoading: documentsLoading } =
+  const { data: rawDocuments, isLoading: documentsLoading } =
     useProjectDocuments(projectId);
+
+  const images = Array.isArray(rawImages) ? rawImages : [];
+  const documents = Array.isArray(rawDocuments) ? rawDocuments : [];
 
   const deleteImageMutation = useDeleteImage();
   const deleteDocumentMutation = useDeleteDocument();
@@ -57,6 +60,7 @@ export default function ProjectFilesPage() {
         <Button
           variant="ghost"
           size="icon"
+          nativeButton={false}
           render={<Link href={`/projects/${projectId}`} />}
         >
           <ArrowLeft className="size-4" />
